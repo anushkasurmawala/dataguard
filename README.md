@@ -1,5 +1,9 @@
 # DataGuard
 
+**Live demo:** https://dataguard-anushka.netlify.app/
+
+Frontend: Netlify. ASP.NET Core API: https://dataguard-api-jah5.onrender.com/. PostgreSQL 16: Render. Use **Try the sample datasets**, then **Compare datasets**. The free API may need roughly a minute to wake after inactivity. The free Render database expires 30 days after creation; this is temporary demonstration hosting.
+
 ## Overview
 
 DataGuard is a prototype full-stack application for comparing reference and incoming datasets and identifying data-quality changes and feature-distribution drift. Its deliberately small scope is suitable for a short, three-week .NET internship project. It is not a production monitoring platform.
@@ -64,7 +68,7 @@ dataguard/
 └── DataGuard.sln
 ```
 
-Controllers handle HTTP, services handle processing, and statistics classes calculate results. There is no authentication, scheduler, alerting, microservice layer, or cloud deployment.
+Controllers handle HTTP, services handle processing, and statistics classes calculate results. There is no authentication, scheduler, alerting, or microservice layer. Hosting is a simple demonstration deployment.
 
 ### Persistence
 

@@ -35,3 +35,24 @@ For migration, persistence, and end-to-end verification, the unmodified C# API u
 The verification runtime and dependency caches live outside the deliverable under the workspace `work/` directory. Frontend build caching and .NET configuration file watching were disabled to avoid local native-cache crashes and configuration-watcher hangs respectively. The preview servers were stopped after verification; use the README commands to start a new local session.
 
 No production readiness, cloud deployment, model accuracy impact, or enterprise scalability was tested or claimed.
+
+
+## Subsequent live hosting verification
+
+The native PostgreSQL verification gap described in the original local record above is now resolved by the hosted deployment.
+
+- Public frontend: https://dataguard-anushka.netlify.app/
+- ASP.NET Core Docker service: https://dataguard-api-jah5.onrender.com/
+- Render PostgreSQL 16; both EF migrations applied successfully during API startup.
+- Deployed application source commit: `57bb093503c8c1323876f4054e8192922af0aecb`.
+- Render service: `srv-dbdqh8jncjis73d5j8dg`; deploy `dep-dbdqh8jncjis73d5j950` reported Live.
+- Netlify deploy `6adba9829071afe4ed2eed6e` reported Published. The initial attempt correctly stopped because its API environment variable was missing; this was saved in project settings and the retry passed.
+- Rebuilt .NET solution: 0 warnings, 0 errors. Executable C# tests: **18 passed, 0 failed**, including hosted database URL conversion.
+- Production Angular build and Netlify-specific build with the actual hosted API: passed.
+- Ran the complete API smoke suite directly against Render's HTTPS endpoint: passed.
+- Ran the same suite through the public Netlify endpoint and its `/api` proxy: passed, including real database persistence/retrieval, CSV validation, duplicates, missingness, outliers, PSI, schema changes, and invalid-role rejection.
+- Browser verification on the public site: sample uploads, comparison, manual CSV selection/upload, Significant filter, income statistics, and distribution chart all worked. Income PSI was 1.205641, age PSI 0.015477, and income missingness increased 6.4360 percentage points.
+- The API stores CSV text in PostgreSQL and runs with `DatasetStorage__KeepFiles=false`; comparisons do not depend on an ephemeral upload directory.
+- Updated `dashboard.png` shows the verified live site.
+
+This remains an internship prototype. The API uses Render's free instance and may take about a minute to wake. The free PostgreSQL database expires 30 days after creation. No paid upgrade was selected.
