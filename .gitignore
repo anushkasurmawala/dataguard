@@ -1,0 +1,10 @@
+**/bin/
+**/obj/
+**/node_modules/
+**/dist/
+**/.angular/
+**/uploads/
+.env
+.DS_Store
+.vs/
+*.user

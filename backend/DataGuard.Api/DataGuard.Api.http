@@ -1,0 +1,6 @@
+@DataGuard.Api_HostAddress = http://127.0.0.1:5080
+
+GET {{DataGuard.Api_HostAddress}}/api/health
+Accept: application/json
+
+### Uploads use multipart form field "file"; see README.md and tests/api_smoke.py.

@@ -1,0 +1,3 @@
+customer_id,annual_income,region,account_balance,monthly_transactions,customer_type,customer_segment
+1,not disclosed,Central,15000,10,Standard,New
+2,unknown,North,12000,12,Premium,Returning

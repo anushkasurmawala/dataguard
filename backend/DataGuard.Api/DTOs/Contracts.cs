@@ -1,0 +1,11 @@
+namespace DataGuard.Api.DTOs;
+public record NumericSummary(double Mean, double Median, double StandardDeviation, double Minimum, double Maximum, double Q1, double Q3, int OutlierCount, double OutlierPercentage);
+public record FeatureProfile(string FeatureName, string DataType, int MissingCount, double MissingPercentage, int UniqueCount, NumericSummary? Numeric, Dictionary<string, int>? Categories);
+public record DatasetProfile(int RowCount, int ColumnCount, int DuplicateRowCount, double DuplicatePercentage, int TotalMissingValues, double OverallMissingPercentage, List<FeatureProfile> Features);
+public record DatasetResponse(Guid Id, string FileName, string DatasetType, DatasetProfile Profile);
+public record CompareRequest(Guid BaselineDatasetId, Guid CurrentDatasetId);
+public record SchemaChange(string ColumnName, string ChangeType, string? BaselineType, string? CurrentType);
+public record DistributionBin(string Label, double BaselinePercentage, double CurrentPercentage);
+public record PsiResult(double Psi, string Status, double[] Boundaries, List<DistributionBin> Bins);
+public record FeatureResult(string FeatureName, double BaselineMissingPercentage, double CurrentMissingPercentage, double MissingChange, NumericSummary? BaselineStatistics, NumericSummary? CurrentStatistics, PsiResult? Drift, string? ExclusionReason);
+public record ComparisonResult(Guid Id, DatasetResponse Baseline, DatasetResponse Current, List<SchemaChange> SchemaChanges, List<FeatureResult> Features);
