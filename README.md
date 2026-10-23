@@ -2,7 +2,7 @@
 
 **Live demo:** https://dataguard-anushka.netlify.app/
 
-Frontend: Netlify. ASP.NET Core API: https://dataguard-api-jah5.onrender.com/. PostgreSQL 16: Render. Use **Try the sample datasets**, then **Compare datasets**. The free API may need roughly a minute to wake after inactivity. The free Render database expires 30 days after creation; this is temporary demonstration hosting.
+Frontend: Netlify. ASP.NET Core API: https://dataguard-api-jah5.onrender.com/. PostgreSQL 16: Neon Free. Use **Try the sample datasets**, then **Compare datasets**. The free API may need roughly a minute to wake after inactivity. The Neon database has no fixed 30-day expiry. Free hosting has usage limits and cold starts; availability is not guaranteed indefinitely.
 
 ## Overview
 
@@ -229,6 +229,6 @@ Netlify can host this Angular frontend. The C# API and PostgreSQL must already b
 3. Deploy. `npm run build:netlify` rejects a missing/invalid API origin or failed backend health check, builds Angular, and writes an API proxy before the SPA fallback.
 4. Verify the complete sample upload and comparison flow on the deployed domain. A passing health check alone does not verify PostgreSQL or dataset analysis.
 
-The repository includes `render.yaml` for an ASP.NET Core Docker web service and PostgreSQL 16. Its cloud configuration stores original CSVs in PostgreSQL, disables local upload copies, binds the host-provided `PORT`, and applies EF migrations on startup. Set `DATABASE_URL` using Render's database reference; the C# connection helper converts it into an Npgsql connection string without logging credentials. No cloud resource has been provisioned by merely adding these files.
+The repository includes `render.yaml` for an ASP.NET Core Docker web service. The live database is PostgreSQL 16 on Neon Free; the original Render database declaration is retained only as a temporary migration backup. Its cloud configuration stores original CSVs in PostgreSQL, disables local upload copies, binds the host-provided `PORT`, and applies EF migrations on startup. Set `DATABASE_URL` in Render to the external Neon direct connection URL (required for the startup EF migrations); never commit the URL. The Blueprint marks this variable `sync: false` so it is supplied externally; the C# connection helper converts it into an Npgsql connection string without logging credentials. A single prototype API uses a direct connection, with Npgsql connection pooling.
 
-Render's free web service sleeps while idle and its free PostgreSQL database expires after 30 days. This is suitable for a temporary internship demonstration; continuing beyond that requires a replacement database or a paid plan approved by the account owner. See https://render.com/docs/free.
+Render's free web service sleeps while idle. Neon Free has no fixed database expiry, but compute, storage and transfer quotas still apply and its compute can suspend while idle. The app no longer depends on Render's expiring free PostgreSQL database. No paid plan was selected. Check current limits at https://render.com/docs/free and https://neon.com/pricing.

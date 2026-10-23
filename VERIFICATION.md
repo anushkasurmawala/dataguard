@@ -55,4 +55,18 @@ The native PostgreSQL verification gap described in the original local record ab
 - The API stores CSV text in PostgreSQL and runs with `DatasetStorage__KeepFiles=false`; comparisons do not depend on an ephemeral upload directory.
 - Updated `dashboard.png` shows the verified live site.
 
-This remains an internship prototype. The API uses Render's free instance and may take about a minute to wake. The free PostgreSQL database expires 30 days after creation. No paid upgrade was selected.
+This remains an internship prototype. The API uses Render's free instance and may take about a minute to wake. At that initial deployment, the free Render PostgreSQL database had a 30-day expiry; the migration record below supersedes that setup. No paid upgrade was selected.
+
+## Free database migration — 2026-10-24
+
+The live API now uses Neon Free PostgreSQL 16, replacing its dependency on Render's 30-day database. The original Render database remains unchanged as a temporary backup; no paid plan was selected.
+
+- Applied both EF migrations on an isolated `migration-check` branch, copied 15 datasets and 8 comparisons, and verified CSV/profile/result contents and identifiers.
+- Repeated the migration on `main` and copied records created during the deployment transition without deleting or overwriting existing records.
+- Render deployment `dep-dbdqtj4ipgvc739r20dg` started successfully with the Neon connection.
+- Re-ran all 18 C# tests: passed.
+- Re-ran the complete API smoke suite through the public Netlify URL: passed, including upload validation, profiles, duplicates, missingness, outliers, PSI, schema and saved retrieval.
+- Confirmed live comparison `7b69ea24-09f9-413a-a518-2d591393f800` exists in Neon directly, proving the API is writing to the new database.
+- Retrieved pre-migration comparison `3eae3963-9672-4904-893e-d7b4d0a11ac0` through the public API: HTTP 200.
+
+Neon console confirmed the Free plan and main branch expiry `Never`. Free-plan quotas and idle suspension still apply. No indefinite availability guarantee is made.
