@@ -58,9 +58,9 @@ public class ComparisonService(AppDbContext db, DatasetService datasets, PsiCalc
 
         var currentResponse = DatasetService.Response(current);
 
-        var baselineData = await datasets.Parse(baseline.FilePath);
+        var baselineData = baseline.CsvContent != null ? await datasets.ParseContent(baseline.CsvContent) : await datasets.Parse(baseline.FilePath);
 
-        var currentData = await datasets.Parse(current.FilePath);
+        var currentData = current.CsvContent != null ? await datasets.ParseContent(current.CsvContent) : await datasets.Parse(current.FilePath);
 
         var features = new List<FeatureResult>();
 

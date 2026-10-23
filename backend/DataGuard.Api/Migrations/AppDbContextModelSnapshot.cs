@@ -56,6 +56,9 @@ namespace DataGuard.Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("CsvContent")
+                        .HasColumnType("text");
+
                     b.Property<string>("DatasetType")
                         .IsRequired()
                         .HasColumnType("text");

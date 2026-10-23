@@ -23,4 +23,9 @@ Check("Profile: nonfinite values are not numeric", () => Assert(Profile(new[] { 
 Check("Profile: all-missing feature is unknown", () => Assert(Profile(new[] { "a" }, new[] { "" }).Features[0].DataType == "unknown"));
 Check("PSI: moderate change classification", () => Assert(psi.Calculate(original, original.Concat(Enumerable.Repeat(100d, 20)).ToArray()).Status == "Moderate"));
 Check("PSI: constant baseline detects a downward shift", () => Assert(psi.Calculate(new double[] { 5, 5, 5 }, new double[] { 4, 4, 4 }).Status == "Significant"));
+Check("Database: hosted URL conversion", () => {
+    var connection = new Npgsql.NpgsqlConnectionStringBuilder(DataGuard.Api.Data.DatabaseConnection.Resolve("postgres://student:p%40ss@db.example.test:5433/dataguard", null));
+    Assert(connection.Host == "db.example.test" && connection.Port == 5433 && connection.Password == "p@ss" && connection.Database == "dataguard");
+});
+Check("Database: configured connection preserved", () => Assert(DataGuard.Api.Data.DatabaseConnection.Resolve(null, "Host=localhost;Database=dataguard") == "Host=localhost;Database=dataguard"));
 Console.WriteLine($"{passed} passed; {failed} failed."); return failed == 0 ? 0 : 1;

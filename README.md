@@ -68,7 +68,7 @@ Controllers handle HTTP, services handle processing, and statistics classes calc
 
 ### Persistence
 
-The small database uses two EF entities: `Datasets` and `Comparisons`. Dataset records contain filename, role, upload time, file path, and a complete profile stored as PostgreSQL JSONB. Comparisons have foreign keys to both datasets, creation time, and the complete comparison snapshot in JSONB (feature comparisons, schema changes, saved baseline boundaries, histogram proportions). This avoids multiple child tables for a prototype while retaining real PostgreSQL persistence and referential integrity. File contents remain in the backend's ignored `uploads/` directory. Keep this folder together with database backups if preserving results.
+The small database uses two EF entities: `Datasets` and `Comparisons`. Dataset records contain filename, role, upload time, file path, and a complete profile stored as PostgreSQL JSONB. Comparisons have foreign keys to both datasets, creation time, and the complete comparison snapshot in JSONB (feature comparisons, schema changes, saved baseline boundaries, histogram proportions). This avoids multiple child tables for a prototype while retaining real PostgreSQL persistence and referential integrity. Original CSV contents are retained in PostgreSQL, so saved comparisons continue working across server restarts. Local runs also keep an ignored `uploads/` copy by default. Set `DatasetStorage__KeepFiles=false` on an ephemeral cloud host. Older local records created before the CSV-content migration still need their original upload files.
 
 ## Running Locally
 
@@ -225,4 +225,6 @@ Netlify can host this Angular frontend. The C# API and PostgreSQL must already b
 3. Deploy. `npm run build:netlify` rejects a missing/invalid API origin or failed backend health check, builds Angular, and writes an API proxy before the SPA fallback.
 4. Verify the complete sample upload and comparison flow on the deployed domain. A passing health check alone does not verify PostgreSQL or dataset analysis.
 
-For the backend, apply EF migrations and configure its real database connection, allowed hostnames, and durable CSV storage before deployment. The current local `uploads/` directory requires persistent storage on a cloud host; ephemeral disk alone is insufficient across restarts. No backend host or database has been provisioned by this configuration.
+The repository includes `render.yaml` for an ASP.NET Core Docker web service and PostgreSQL 16. Its cloud configuration stores original CSVs in PostgreSQL, disables local upload copies, binds the host-provided `PORT`, and applies EF migrations on startup. Set `DATABASE_URL` using Render's database reference; the C# connection helper converts it into an Npgsql connection string without logging credentials. No cloud resource has been provisioned by merely adding these files.
+
+Render's free web service sleeps while idle and its free PostgreSQL database expires after 30 days. This is suitable for a temporary internship demonstration; continuing beyond that requires a replacement database or a paid plan approved by the account owner. See https://render.com/docs/free.

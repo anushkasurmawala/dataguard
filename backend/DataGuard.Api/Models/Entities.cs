@@ -2,82 +2,33 @@ namespace DataGuard.Api.Models;
 public class Dataset
 {
     public Guid Id
-    {
-        get;
-        set;
-    }
- = Guid.NewGuid();
+    { get; set; } = Guid.NewGuid();
     public string FileName
-    {
-        get;
-        set;
-    }
- = "";
+    { get; set; } = "";
     public string DatasetType
-    {
-        get;
-        set;
-    }
- = "";
+    { get; set; } = "";
     public DateTime UploadedAt
-    {
-        get;
-        set;
-    }
- = DateTime.UtcNow;
+    { get; set; } = DateTime.UtcNow;
     public string FilePath
-    {
-        get;
-        set;
-    }
- = "";
+    { get; set; } = "";
+    public string? CsvContent { get; set; }
     public string ProfileJson
-    {
-        get;
-        set;
-    }
- = "";
+    { get; set; } = "";
 }
 public class Comparison
 {
     public Guid Id
-    {
-        get;
-        set;
-    }
- = Guid.NewGuid();
+    { get; set; } = Guid.NewGuid();
     public Guid BaselineDatasetId
-    {
-        get;
-        set;
-    }
+    { get; set; }
     public Guid CurrentDatasetId
-    {
-        get;
-        set;
-    }
+    { get; set; }
     public Dataset BaselineDataset
-    {
-        get;
-        set;
-    }
- = null!;
+    { get; set; } = null!;
     public Dataset CurrentDataset
-    {
-        get;
-        set;
-    }
- = null!;
+    { get; set; } = null!;
     public DateTime CreatedAt
-    {
-        get;
-        set;
-    }
- = DateTime.UtcNow;
+    { get; set; } = DateTime.UtcNow;
     public string ResultJson
-    {
-        get;
-        set;
-    }
- = "";
+    { get; set; } = "";
 }

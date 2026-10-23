@@ -8,11 +8,22 @@ using DataGuard.Api.Models;
 
 namespace DataGuard.Api.Services;
 
-public class DatasetService(AppDbContext db, ProfilingService profiling, IWebHostEnvironment env)
+public class DatasetService(AppDbContext db, ProfilingService profiling, IWebHostEnvironment env, IConfiguration configuration)
 {
     public async Task<ParsedDataset> Parse(string path)
     {
         using var reader = new StreamReader(path);
+        return await ParseReader(reader);
+    }
+
+    public async Task<ParsedDataset> ParseContent(string content)
+    {
+        using var reader = new StringReader(content);
+        return await ParseReader(reader);
+    }
+
+    private async Task<ParsedDataset> ParseReader(TextReader reader)
+    {
         using var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture)
         {
             IgnoreBlankLines = true,
@@ -54,19 +65,28 @@ public class DatasetService(AppDbContext db, ProfilingService profiling, IWebHos
             || !Path.GetExtension(file.FileName).Equals(".csv", StringComparison.OrdinalIgnoreCase))
             throw new ArgumentException("Choose a nonempty CSV file up to 20 MB.");
 
-        var folder = Path.Combine(env.ContentRootPath, "uploads");
-        Directory.CreateDirectory(folder);
-        var path = Path.Combine(folder, Guid.NewGuid() + ".csv");
+        // PostgreSQL retains the original CSV so cloud restarts cannot break comparisons.
+        using var reader = new StreamReader(file.OpenReadStream());
+        var content = await reader.ReadToEndAsync();
+        var profile = profiling.Profile(await ParseContent(content));
+        var keepFiles = configuration.GetValue("DatasetStorage:KeepFiles", true);
+        var path = "";
+        if (keepFiles)
+        {
+            var folder = Path.Combine(env.ContentRootPath, "uploads");
+            Directory.CreateDirectory(folder);
+            path = Path.Combine(folder, Guid.NewGuid() + ".csv");
+        }
         try
         {
-            await using (var stream = File.Create(path))
-                await file.CopyToAsync(stream);
-            var profile = profiling.Profile(await Parse(path));
+            if (keepFiles)
+                await File.WriteAllTextAsync(path, content);
             var dataset = new Dataset
             {
                 FileName = Path.GetFileName(file.FileName),
                 DatasetType = type,
                 FilePath = path,
+                CsvContent = content,
                 ProfileJson = JsonSerializer.Serialize(profile)
             };
             db.Datasets.Add(dataset);
@@ -76,7 +96,7 @@ public class DatasetService(AppDbContext db, ProfilingService profiling, IWebHos
         catch
         {
             // Avoid orphaned files if parsing or persistence fails.
-            File.Delete(path);
+            if (path.Length > 0) File.Delete(path);
             throw;
         }
     }
