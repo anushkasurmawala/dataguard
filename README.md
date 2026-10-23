@@ -214,3 +214,15 @@ A suggested short-internship sequence: scaffold API/Angular/database; CSV upload
 ## Verification
 
 See `VERIFICATION.md` for checks actually performed in the supplied development environment and their limits.
+
+
+## Netlify deployment
+
+Netlify can host this Angular frontend. The C# API and PostgreSQL must already be deployed on compatible hosting; Netlify Functions do not directly run this ASP.NET Core application.
+
+1. Import this GitHub repository into Netlify. The root `netlify.toml` supplies the frontend base directory, Node 22, build command, and publish directory.
+2. Add `DATAGUARD_API_URL` in the Netlify project's environment settings. Its value must be the actual HTTPS origin of the hosted C# API, with no `/api` suffix or credentials.
+3. Deploy. `npm run build:netlify` rejects a missing/invalid API origin or failed backend health check, builds Angular, and writes an API proxy before the SPA fallback.
+4. Verify the complete sample upload and comparison flow on the deployed domain. A passing health check alone does not verify PostgreSQL or dataset analysis.
+
+For the backend, apply EF migrations and configure its real database connection, allowed hostnames, and durable CSV storage before deployment. The current local `uploads/` directory requires persistent storage on a cloud host; ephemeral disk alone is insufficient across restarts. No backend host or database has been provisioned by this configuration.

@@ -1,0 +1,12 @@
+[build]
+  base = "frontend"
+  command = "npm run build:netlify"
+  publish = "dist/dataguard/browser"
+
+[build.environment]
+  NODE_VERSION = "22"
+  NG_BUILD_MAX_WORKERS = "1"
+
+# Set DATAGUARD_API_URL to the real HTTPS backend origin in Netlify's
+# environment settings before deploying. The build rejects a missing URL.
+# The build script generates an API proxy rule followed by an SPA fallback.
